@@ -20,7 +20,6 @@ def assess_portfolio(sd = dt.datetime(2008,1,1), ed = dt.datetime(2009,1,1), \
     prices = prices_all[syms]  # only portfolio symbols
     prices_SPY = prices_all['SPY']  # only SPY, for comparison later
 
-    #prices = prices.dropna()
     prices = prices.fillna(method='ffill',inplace=False)
     prices = prices.fillna(method='bfill',inplace=False)
 
