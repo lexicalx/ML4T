@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import datetime as dt
 from util import get_data, plot_data
+import math
 
 # This is the function that will be tested by the autograder
 # The student must update this code to properly implement the functionality
@@ -19,12 +20,30 @@ def assess_portfolio(sd = dt.datetime(2008,1,1), ed = dt.datetime(2009,1,1), \
     prices = prices_all[syms]  # only portfolio symbols
     prices_SPY = prices_all['SPY']  # only SPY, for comparison later
 
+    #prices = prices.dropna()
+    prices = prices.fillna(method='ffill',inplace=False)
+    prices = prices.fillna(method='bfill',inplace=False)
+
+
     # Get daily portfolio value
-    port_val = prices_SPY # add code here to compute daily portfolio values
+
+    normed_prices = prices/prices.ix[0]
+    alloced = allocs*normed_prices
+    pos_vals = alloced*sv
+    port_val = pos_vals.sum(axis=1)
 
     # Get portfolio statistics (note: std_daily_ret = volatility)
-    cr, adr, sddr, sr = [0.25, 0.001, 0.0005, 2.1] # add code here to compute stats
+    cr = (port_val[-1]/port_val[0])-1
 
+    dr = port_val.copy()
+    dr[1:] = (port_val[1:]/port_val[:-1].values)-1
+    dr.ix[0] = 0
+    dr = dr.drop(dr.index[0],inplace=False)
+
+    adr = dr.mean()
+    sddr = dr.std()
+
+    sr = math.sqrt(sf)*(adr-rfr)/sddr
     # Compare daily portfolio value with SPY using a normalized plot
     if gen_plot:
         # add code to plot here
@@ -32,7 +51,7 @@ def assess_portfolio(sd = dt.datetime(2008,1,1), ed = dt.datetime(2009,1,1), \
         pass
 
     # Add code here to properly compute end value
-    ev = sv
+    ev = port_val[-1]
 
     return cr, adr, sddr, sr, ev
 
