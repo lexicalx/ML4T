@@ -1,6 +1,8 @@
 """MC1-P2: Optimize a portfolio."""
 
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import datetime as dt
