@@ -20,6 +20,22 @@ def assess_portfolio(sd = dt.datetime(2008,1,1), ed = dt.datetime(2009,1,1), \
     prices = prices_all[syms]  # only portfolio symbols
     prices_SPY = prices_all['SPY']  # only SPY, for comparison later
 
+    cr, adr, sddr, sr, ev, port_val = compute_portfolio_stats(prices,allocs,sv,rfr,sf)
+    
+    # Compare daily portfolio value with SPY using a normalized plot
+    if gen_plot:
+        # add code to plot here
+        df_temp = pd.concat([port_val, prices_SPY], keys=['Portfolio', 'SPY'], axis=1)
+        pass
+
+    return cr, adr, sddr, sr, ev
+
+
+def compute_portfolio_stats(prices, \
+    allocs=[0.1,0.2,0.3,0.4],\
+    sv=1000000,\
+    rfr = 0.0, sf = 252.0):
+    
     prices = prices.fillna(method='ffill',inplace=False)
     prices = prices.fillna(method='bfill',inplace=False)
 
@@ -43,17 +59,11 @@ def assess_portfolio(sd = dt.datetime(2008,1,1), ed = dt.datetime(2009,1,1), \
     sddr = dr.std()
 
     sr = math.sqrt(sf)*(adr-rfr)/sddr
-    # Compare daily portfolio value with SPY using a normalized plot
-    if gen_plot:
-        # add code to plot here
-        df_temp = pd.concat([port_val, prices_SPY], keys=['Portfolio', 'SPY'], axis=1)
-        pass
-
-    # Add code here to properly compute end value
+    
     ev = port_val[-1]
 
-    return cr, adr, sddr, sr, ev
-
+    return cr, adr, sddr, sr, ev, port_val
+    
 def test_code():
     # This code WILL NOT be tested by the auto grader
     # It is only here to help you set up and test your code
