@@ -29,7 +29,7 @@ if __name__=="__main__":
     print testY.shape
 
     # create a learner and train it
-    learner = dtl.DTLearner(5,verbose = False) # create a LinRegLearner
+    learner = dtl.DTLearner(1,verbose = True) # create a LinRegLearner
     learner.addEvidence(trainX, trainY) # train it
     print learner.author()
 
