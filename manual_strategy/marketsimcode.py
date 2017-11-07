@@ -11,15 +11,15 @@ import math
 def author():
     return 'vsrinath6'  # replace tb34 with your Georgia Tech username.
 
-def compute_portvals(orders_file = "./orders/orders.csv", start_val = 1000000, commission=9.95, impact=0.005):
-    orders_df = pd.read_csv(orders_file, index_col='Date', parse_dates=True, na_values=['nan'])
+def compute_portvals(orders_df, start_val = 1000000, commission=9.95, impact=0.005, sd=dt.datetime(2010, 1, 1), ed=dt.datetime(2011, 12, 31)):
+    # orders_df = pd.read_csv(orders_file, index_col='Date', parse_dates=True, na_values=['nan'])
     orders_df.sort_index(inplace=True)
-    order_dates = list(orders_df.index.unique())
+    # order_dates = list(orders_df.index.unique())
     # print "No of orders:{}".format(len(orders_df))
     unique_symbols = list(orders_df['Symbol'].unique())
     # print "Unique symbols:{}".format(unique_symbols)
 
-    dates = pd.date_range(order_dates[0], order_dates[-1])
+    dates = pd.date_range(sd, ed)
     prices_all = get_data(unique_symbols, dates)  # automatically adds SPY
     prices_all = prices_all[unique_symbols]
     prices_all.fillna(method='ffill', inplace=True)
@@ -66,11 +66,11 @@ def test_code():
     # note that during autograding his function will not be called.
     # Define input parameters
 
-    of = "./orders/orders-short.csv"
-    sv = 1000000
+    of = "./benchmark.csv"
+    sv = 100000
 
     # Process orders
-    portvals = compute_portvals(orders_file = of, start_val = sv)
+    portvals = compute_portvals(orders_file = of, start_val = sv, commission=0.0, impact=0.0, sd=dt.datetime(2008, 1, 1), ed=dt.datetime(2009, 12, 31))
     if isinstance(portvals, pd.DataFrame):
         portvals = portvals[portvals.columns[0]] # just get the first column
     else:
@@ -79,8 +79,8 @@ def test_code():
     print portvals
     # Get portfolio stats
     # Here we just fake the data. you should use your code from previous assignments.
-    start_date = dt.datetime(2008,1,1)
-    end_date = dt.datetime(2008,6,1)
+    start_date = dt.datetime(2008, 1, 1)
+    end_date = dt.datetime(2009, 12, 31)
     cum_ret, avg_daily_ret, std_daily_ret, sharpe_ratio = [0.2,0.01,0.02,1.5]
     cum_ret_SPY, avg_daily_ret_SPY, std_daily_ret_SPY, sharpe_ratio_SPY = [0.2,0.01,0.02,1.5]
 
