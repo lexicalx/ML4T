@@ -80,7 +80,7 @@ class QLearner(object):
         if rand.uniform(0.0,1.0) > self.rar:
             action = np.argmax(self.QTable[s_prime, :])
         else:
-            action = rand.randrange(self.num_actions)
+            action = np.random.randint(self.num_actions)
         self.rar *= self.radr
         self.a = action
         if self.verbose: print "s =", s_prime, "a =", action, "r =", r
