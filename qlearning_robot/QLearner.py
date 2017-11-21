@@ -36,12 +36,8 @@ class QLearner(object):
         self.a_experienced = []
         self.s_prime_experienced = []
         self.r_experienced = []
-
         self.QTable = np.zeros((self.num_states, self.num_actions), dtype=float)
-        # if self.dyna > 0:
-        #     self.Tc = np.ones((self.num_states,self.num_actions,self.num_states)) * 0.00001
-        #     self.T = self.Tc / self.Tc.sum(axis=2,keepdims=True)
-        #     self.R = -1.0 * np.ones((self.num_states,self.num_actions))
+
 
     def querysetstate(self, s):
         """
@@ -70,20 +66,9 @@ class QLearner(object):
         self.s_prime_experienced.append(s_prime)
         self.a_experienced.append(self.a)
         self.r_experienced.append(r)
-        # newrow = [self.s,self.a,s_prime,r]
-        # self.exp = np.vstack([self.exp,newrow])
-        # print self.exp
-        # print "---------------------"
-        # self.R[self.s, self.a] = (1 - self.alpha) * self.R[self.s, self.a] + self.alpha * r
 
         ## Hallucinate
         if self.dyna > 0:
-            # s = np.random.choice(self.s_experienced, size=1)[0]
-            # a = np.random.choice(self.a_experienced, size=1)[0]
-            # s = self.s_experienced[np.random.randint(0,len(self.s_experienced))]
-            # a = self.a_experienced[np.random.randint(0,len(self.a_experienced))]
-            # s_prime = self.s_experienced[np.random.randint(len(self.s_experienced))]
-            # r = self.R[s, a]
             iterations = min(self.dyna,len(self.s_experienced))
             for i in range(iterations):
                 n = np.random.randint(0, len(self.s_experienced))
