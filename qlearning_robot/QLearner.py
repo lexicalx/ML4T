@@ -77,14 +77,15 @@ class QLearner(object):
         # self.R[self.s, self.a] = (1 - self.alpha) * self.R[self.s, self.a] + self.alpha * r
 
         ## Hallucinate
-        if self.dyna > 10:
+        if self.dyna > 0:
             # s = np.random.choice(self.s_experienced, size=1)[0]
             # a = np.random.choice(self.a_experienced, size=1)[0]
             # s = self.s_experienced[np.random.randint(0,len(self.s_experienced))]
             # a = self.a_experienced[np.random.randint(0,len(self.a_experienced))]
             # s_prime = self.s_experienced[np.random.randint(len(self.s_experienced))]
             # r = self.R[s, a]
-            for i in range(self.dyna):
+            iterations = min(self.dyna,len(self.s_experienced))
+            for i in range(iterations):
                 n = np.random.randint(0, len(self.s_experienced))
                 self.QTable[self.s_experienced[n], self.a_experienced[n]] = (1 - self.alpha) * self.QTable[self.s_experienced[n], self.a_experienced[n]] + self.alpha * (
                     self.r_experienced[n] + self.gamma * np.max(self.QTable[self.s_prime_experienced[n], :]))
