@@ -3,10 +3,6 @@ Template for implementing QLearner  (c) 2015 Tucker Balch
 """
 
 import numpy as np
-import random as rand
-
-from numpy.core.multiarray import dtype
-
 
 class QLearner(object):
     def author(self):
@@ -36,7 +32,7 @@ class QLearner(object):
         self.a_experienced = []
         self.s_prime_experienced = []
         self.r_experienced = []
-        self.QTable = np.zeros((self.num_states, self.num_actions), dtype=float)
+        self.QTable = np.zeros((self.num_states, self.num_actions))
 
 
     def querysetstate(self, s):
@@ -77,7 +73,7 @@ class QLearner(object):
 
         ## Remember state and return action
         self.s = s_prime
-        if rand.uniform(0.0,1.0) > self.rar:
+        if np.random.uniform(0.0,1.0) > self.rar:
             action = np.argmax(self.QTable[s_prime, :])
         else:
             action = np.random.randint(self.num_actions)
