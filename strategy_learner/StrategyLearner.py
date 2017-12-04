@@ -55,6 +55,8 @@ class StrategyLearner(object):
 
         converged = False
         count = 0
+        prev_total_reward = 0
+        reward_match_count = 0
         while not converged:
             # setquerystate
             state = states.ix[0, symbol]
@@ -79,8 +81,11 @@ class StrategyLearner(object):
             count += 1
             total_time = time.clock() - start_time
             # print total_time
-            if total_time > 20:
-                converged = True
+            prev_total_reward = total_reward
+            if total_reward == prev_total_reward:
+                reward_match_count += 1
+                if reward_match_count == 5:
+                    converged = True
 
     # this method should use the existing policy and test it against new data
     def testPolicy(self, symbol="IBM", \
