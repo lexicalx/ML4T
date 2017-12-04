@@ -31,7 +31,7 @@ class StrategyLearner(object):
         ed=dt.datetime(2009,1,1), \
         sv = 10000):
 
-        self.learner = ql.QLearner(num_states=(ed-sd).days, \
+        self.learner = ql.QLearner(num_states=3000, \
                                    num_actions=3, \
                                    alpha=0.2, \
                                    gamma=0.9, \
@@ -45,19 +45,17 @@ class StrategyLearner(object):
         prices = ut.get_data([symbol], lookback_dates)
         prices = prices.ix[:, [symbol]]
 
-        priceOverSMAValues = priceOverSMA(symbol,prices)
-        bbpValues = bbp(symbol,prices)
-        rsiValues = rsi(symbol,prices)
+        priceOverSMAValues = priceOverSMA(prices)
+        bbpValues = bbp(prices)
+        rsiValues = rsi(prices)
 
         self.prices = prices.ix[sd:]
         self.symbol = symbol
 
         priceOverSMAValues = priceOverSMAValues.ix[sd:]
         priceOverSMAValues[symbol] = pd.qcut(priceOverSMAValues[symbol].values, 10).codes
-
         bbpValues = bbpValues.ix[sd:]
         bbpValues[symbol] = pd.qcut(bbpValues[symbol].values, 10).codes
-
         rsiValues = rsiValues.ix[sd:]
         rsiValues[symbol] = pd.qcut(rsiValues[symbol].values, 10).codes
 
@@ -95,9 +93,9 @@ class StrategyLearner(object):
         prices = ut.get_data([symbol], lookback_dates)
         prices = prices.ix[:, [symbol]]
 
-        priceOverSMAValues = priceOverSMA(symbol,prices)
-        bbpValues = bbp(symbol,prices)
-        rsiValues = rsi(symbol,prices)
+        priceOverSMAValues = priceOverSMA(prices)
+        bbpValues = bbp(prices)
+        rsiValues = rsi(prices)
 
         self.prices = prices.ix[sd:]
         self.symbol = symbol
@@ -131,7 +129,7 @@ class StrategyLearner(object):
             state = states.ix[day, symbol]
             action = self.learner.querysetstate(state)
             df_trades.ix[day, symbol] = self.addNewAction(net_position,day,action)
-        # print df_trades
+        df_trades = df_trades[(df_trades.T != 0).any()]
         return df_trades
 
     def getReward(self,net_position,day):
@@ -147,8 +145,8 @@ class StrategyLearner(object):
     def addNewAction(self, net_position, day, action):
         shares = 0.0
         if action == self.BUY:
-            # if net_position == self.LONG:
-            #     shares = 0.0
+            if net_position == self.LONG:
+                shares = 0.0
             if net_position == self.NONE:
                 shares = 1000.0
             elif net_position == self.SHORT:
@@ -156,8 +154,8 @@ class StrategyLearner(object):
         elif action == self.NOTHING:
             if net_position == self.LONG:
                 shares = -1000.0
-            # elif net_position == self.NONE:
-            #     shares = 0.0
+            elif net_position == self.NONE:
+                shares = 0.0
             elif net_position == self.SHORT:
                 shares = 1000.0
         elif action == self.SELL:
@@ -165,8 +163,8 @@ class StrategyLearner(object):
                 shares = -2000.0
             elif net_position == self.NONE:
                 shares = -1000.0
-            # elif net_position == self.SHORT:
-            #     shares = 0
+            elif net_position == self.SHORT:
+                shares = 0
         return shares
 
 if __name__=="__main__":

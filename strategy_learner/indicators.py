@@ -29,7 +29,7 @@ def macd(prices, fast_window=12, slow_window=26, signal_window=9):
     return pd.concat([macd,signal,hist],axis=1)
 
 
-def bbp(symbol,prices, window=14, min_periods=14):
+def bbp(prices, window=14, min_periods=14):
     medium = sma(prices, window=window, min_periods=min_periods)
     rolling_std = prices.rolling(window=window,
                                  min_periods=min_periods).std()
@@ -48,7 +48,7 @@ def bbp(symbol,prices, window=14, min_periods=14):
     return bbp
 
 
-def rsi(symbol,prices, window=14, min_periods=0):
+def rsi(prices, window=14, min_periods=0):
     change = prices.diff()
     change.iloc[0] = 0.0  # Set gain/loss of first day to zero
     # Using arithmetic mean, not exponential smoothing here
@@ -88,7 +88,7 @@ def atr(df, col_labels=('Low', 'High', 'Close'), window=14):
 
     return atr
 
-def priceOverSMA(symbol,prices):
+def priceOverSMA(prices):
     sma_JPM = sma(prices)
     sma_JPM = sma_JPM.dropna()
     prices = prices.dropna()
