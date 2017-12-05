@@ -1,3 +1,6 @@
+"""
+Vinay Srinath - vsrinath6
+"""
 import pandas as pd
 from pandas import np
 import numpy as np
@@ -7,6 +10,10 @@ import datetime as dt
 import math
 from marketsimcode import compute_portvals
 import matplotlib.pyplot as plt
+
+
+def author():
+    return 'vsrinath6'  # replace tb34 with your Georgia Tech username
 
 def sma(prices, window=14, min_periods=14):
     sma = prices.rolling(window=window, min_periods=min_periods,
@@ -46,6 +53,24 @@ def bbp(prices, window=14, min_periods=14):
     # bbp['Lower band'] = 0.0
     # bbp.rename(columns={symbol: 'BBP'}, inplace=True)
     return bbp
+
+def bbands(prices, window=14, min_periods=14):
+    medium = sma(prices, window=window, min_periods=min_periods)
+    rolling_std = prices.rolling(window=window,
+                                 min_periods=min_periods).std()
+    rolling_std.iloc[0] = 0.0  # We define the std of one element to be 0
+    top_band = medium + (2 * rolling_std)
+    bottom_band = medium - (2 * rolling_std)
+
+    bband = prices.copy()
+    bband['Upper Band'] = top_band
+    bband['Lower Band'] = bottom_band
+
+    bbp = (prices - bottom_band) / (top_band - bottom_band)
+    bbp['Upper band'] = 1.0
+    bbp['Lower band'] = 0.0
+    bbp.rename(columns={'JPM': 'BBP'}, inplace=True)
+    return bband,bbp
 
 
 def rsi(prices, window=14, min_periods=0):

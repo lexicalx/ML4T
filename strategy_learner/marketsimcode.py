@@ -1,4 +1,6 @@
-"""MC2-P1: Market simulator."""
+"""
+Vinay Srinath - vsrinath6
+"""
 
 import pandas as pd
 import numpy as np

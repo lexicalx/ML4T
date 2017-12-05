@@ -1,5 +1,5 @@
 """
-Template for implementing StrategyLearner  (c) 2016 Tucker Balch
+Vinay Srinath - vsrinath6
 """
 
 import datetime as dt
@@ -12,6 +12,9 @@ import numpy as np
 from indicators import rsi,bbp, priceOverSMA
 
 class StrategyLearner(object):
+
+    def author(self):
+        return 'vsrinath6'  # replace tb34 with your Georgia Tech username
 
     # constructor
     def __init__(self, verbose = False, impact=0.0):
@@ -31,6 +34,7 @@ class StrategyLearner(object):
         ed=dt.datetime(2009,1,1), \
         sv = 10000):
 
+        ## Initialize Q Learner
         self.learner = ql.QLearner(num_states=3000, \
                                    num_actions=3, \
                                    alpha=0.2, \
@@ -40,11 +44,16 @@ class StrategyLearner(object):
                                    dyna=0, \
                                    verbose=False)
 
+        ## 14 day lookback period
         lookback_dates = pd.date_range(sd - dt.timedelta(days=30), ed)
 
+        ## Get Prices
         prices = ut.get_data([symbol], lookback_dates)
         prices = prices.ix[:, [symbol]]
+        prices = prices.fillna(method='ffill', inplace=False)
+        prices = prices.fillna(method='bfill', inplace=False)
 
+        ## Get indicators
         priceOverSMAValues = priceOverSMA(prices)
         bbpValues = bbp(prices)
         rsiValues = rsi(prices)
@@ -52,6 +61,7 @@ class StrategyLearner(object):
         self.prices = prices.ix[sd:]
         self.symbol = symbol
 
+        ## Discretize
         priceOverSMAValues = priceOverSMAValues.ix[sd:]
         priceOverSMAValues[symbol] = pd.qcut(priceOverSMAValues[symbol].values, 10).codes
         bbpValues = bbpValues.ix[sd:]
@@ -59,8 +69,10 @@ class StrategyLearner(object):
         rsiValues = rsiValues.ix[sd:]
         rsiValues[symbol] = pd.qcut(rsiValues[symbol].values, 10).codes
 
+        ## Set up state
         states = (priceOverSMAValues * 100) + (bbpValues * 10) + rsiValues * 1
 
+        ##Update Q Table until converged
         converged = False
         prev_total_reward = 0
         reward_match_count = 0
@@ -88,15 +100,21 @@ class StrategyLearner(object):
                    ed=dt.datetime(2010, 1, 1), \
                    sv=10000):
 
+        ## 14 day Lookup period
         lookback_dates = pd.date_range(sd - dt.timedelta(days=30), ed)
 
+        ## Get prices
         prices = ut.get_data([symbol], lookback_dates)
         prices = prices.ix[:, [symbol]]
+        prices = prices.fillna(method='ffill', inplace=False)
+        prices = prices.fillna(method='bfill', inplace=False)
 
+        ## Get indicators
         priceOverSMAValues = priceOverSMA(prices)
         bbpValues = bbp(prices)
         rsiValues = rsi(prices)
 
+        ##Discretize
         self.prices = prices.ix[sd:]
         self.symbol = symbol
         priceOverSMAValues = priceOverSMAValues.ix[sd:]
@@ -110,8 +128,9 @@ class StrategyLearner(object):
 
         states = (priceOverSMAValues * 100) + (bbpValues * 10) + rsiValues * 1
 
-        df_trades = priceOverSMAValues.copy()
 
+        df_trades = priceOverSMAValues.copy()
+        ##Query
         state = states.ix[0, symbol]
         action = self.learner.querysetstate(state)
 

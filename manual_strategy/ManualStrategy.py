@@ -151,12 +151,12 @@ if __name__ == "__main__":
     ms = ManualStrategy()
 
     sv = 100000
-    sd = dt.datetime(2010, 1, 1)
-    ed = dt.datetime(2011, 12, 31)
+    sd = dt.datetime(2008, 1, 1)
+    ed = dt.datetime(2009, 12, 31)
 
     print "------------------------------"
     print "BENCHMARK"
-    benchmark_df = ms.testBenchMark(symbol='JPM',sd=sd+ dt.timedelta(days=3),ed=ed,sv=sv)
+    benchmark_df = ms.testBenchMark(symbol='JPM',sd=sd+ dt.timedelta(days=1),ed=ed,sv=sv)
     benchmark_portvals = compute_portvals(orders_df=benchmark_df, start_val=sv, commission=9.95, impact=0.005, sd=sd,
                                           ed=ed)
     if isinstance(benchmark_portvals, pd.DataFrame):
@@ -178,4 +178,4 @@ if __name__ == "__main__":
 
     compute_stats(ms_portvals, sd, ed)
 
-    plot_portvals(ms,benchmark_portvals, ms_portvals, 'outsample')
+    plot_portvals(ms,benchmark_portvals, ms_portvals, 'insample')
